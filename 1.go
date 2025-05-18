@@ -7,6 +7,18 @@ var (
 	keahlianList = []string{}
 )
 
+type Karir struct {
+	Nama      string
+	Kecocokan int
+	Industri  string
+	Gaji      string
+}
+
+type Pekerjaan struct {
+	Nama string
+	Gaji string
+}
+
 func main() {
 	var keluar bool
 	var pilihan int
@@ -18,8 +30,8 @@ func main() {
 		fmt.Println("3. Edit minat")
 		fmt.Println("4. Edit keahlian")
 		fmt.Println("5. Karir rekomendasi")
-		fmt.Println("6. Tampilkan Minat ")
-		fmt.Println("7. Tampilkan Keahlian ")
+		fmt.Println("6. Tampilkan Minat Dan Keahlian ")
+		fmt.Println("7. Pekerjaan ")
 		fmt.Println("8. Keluar")
 		fmt.Print("Masukkan pilihan (1-8): ")
 		fmt.Scan(&pilihan)
@@ -40,9 +52,9 @@ func main() {
 		case 5:
 			karirRekomendasi()
 		case 6:
-			tampilminat("Daftar minat", minatList)
+			tampilMinatDanKeahlian(minatList, keahlianList)
 		case 7:
-			tampilkeahlian("Daftar kealhlian", keahlianList)
+			pekerjaan()
 		case 8:
 			fmt.Println("Terima kasih, program selesai.")
 			keluar = true
@@ -53,8 +65,8 @@ func main() {
 }
 
 func tambahMinat() {
-	var pilihan int
-	fmt.Println("\n=== Tambah Minat ===")
+	var input string
+
 	daftarMinat := []string{
 		"Membaca",
 		"Menulis",
@@ -65,24 +77,60 @@ func tambahMinat() {
 		"Melukis",
 		"Bermain alat musik",
 	}
+
+	fmt.Println("\n=== Tambah Minat ===")
 	fmt.Println("Daftar minat yang tersedia:")
 	for i, minat := range daftarMinat {
 		fmt.Printf("%d. %s\n", i+1, minat)
 	}
 
-	fmt.Print("\nPilih nomor minat (1-8): ")
-	fmt.Scan(&pilihan)
-	if  pilihan < 1 || pilihan > 8 {
-		fmt.Println("Input tidak valid")
+	sisa := 3 - len(minatList)
+	if sisa <= 0 {
+		fmt.Println("\nYahh kamu sudah menambahkan 3 minat")
 		return
 	}
-	minatTerpilih := daftarMinat[pilihan-1]
-	minatList = append(minatList, minatTerpilih)
-	fmt.Printf("Minat '%s' berhasil ditambahkan\n", minatTerpilih)
+
+	fmt.Printf("\nKamu bisa mengisi %d minat (ketik '-' untuk berhenti lebih awal)\n", sisa)
+	for i := 0; i < sisa; i++ {
+		fmt.Printf("Pilihan %d (1-8 atau - untuk berhenti): ", i+1)
+		fmt.Scan(&input)
+
+		if input == "-" {
+			fmt.Println("Anda Menghentikan Pemambahan.")
+			break
+		}
+
+		var pilihan int
+		_, err := fmt.Sscan(input, &pilihan)
+		if err != nil || pilihan < 1 || pilihan > len(daftarMinat) {
+			fmt.Println("Input tidak valid")
+			return
+		}
+
+		duplikat := false
+		for _, m := range minatList {
+			if m == daftarMinat[pilihan-1] {
+				duplikat = true
+				break
+			}
+		}
+		if duplikat {
+			fmt.Println("Minat sudah ada, coba yang lain.")
+			i--
+			continue
+		}
+
+		minatList = append(minatList, daftarMinat[pilihan-1])
+		fmt.Println("--Minat berhasil ditambahkan--")
+	}
+
+	fmt.Println("Minat kamu sekarang:", minatList)
 }
 
 func tambahKeahlian() {
-	var pilihan int
+	var pilihan, sisa int
+	sisa = 1 - len(keahlianList) // Maksimal 1 keahlian
+
 	fmt.Println("\n=== Tambah Keahlian ===")
 	daftarKeahlian := []string{
 		"Coding",
@@ -93,20 +141,30 @@ func tambahKeahlian() {
 		"Menganalisis",
 		"Melukis",
 	}
+
 	fmt.Println("Daftar Keahlian yang tersedia:")
 	for i, ahli := range daftarKeahlian {
 		fmt.Printf("%d. %s\n", i+1, ahli)
 	}
 
-	fmt.Print("\nPilih nomor Keahlian (1-7): ")
-	fmt.Scan(&pilihan)
-	if pilihan > 7 {
-		fmt.Println("Input tidak valid")
+	if sisa <= 0 {
+		fmt.Println("\nYahh kamu sudah menambahkan 1 keahlian")
 		return
 	}
-	keahlianTerpilih := daftarKeahlian[pilihan-1]
-	keahlianList = append(keahlianList, keahlianTerpilih)
-	fmt.Printf("keahlian '%s' berhasil ditambahkan\n", keahlianTerpilih)
+
+	fmt.Printf("\nKamu bisa mengisi %d keahlian\n", sisa)
+	for i := 0; i < sisa; i++ {
+		fmt.Printf("Pilihan %d (1-7): ", i+1)
+		fmt.Scan(&pilihan)
+
+		if pilihan < 1 || pilihan > 7 {
+			fmt.Println("Input tidak valid")
+			return
+		}
+
+		keahlianList = append(keahlianList, daftarKeahlian[pilihan-1])
+		fmt.Println("--Keahlian berhasil ditambahkan--")
+	}
 }
 
 func editMinat() {
@@ -124,7 +182,8 @@ func editMinat() {
 
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah Minat")
-	fmt.Println("2. hapus Minat")
+	fmt.Println("2. hapus Minat (pilih 1)")
+	fmt.Print("pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
 	case 1:
@@ -149,7 +208,8 @@ func editKeahlian() {
 	}
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah keahlian")
-	fmt.Println("2. hapus keahlian")
+	fmt.Println("2. hapus keahlian (pilih 1)")
+	fmt.Print("pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
 	case 1:
@@ -173,7 +233,7 @@ func hapusMinat() {
 
 	minatTerhapus := minatList[pilihan-1]
 	minatList = append(minatList[:pilihan-1], minatList[pilihan:]...)
-	fmt.Printf("Minat '%s' berhasil dihapus\n", minatTerhapus)
+	fmt.Println("Minat berhasil dihapus\n", minatTerhapus, 3-len(minatList))
 }
 
 func hapusKeahlian() {
@@ -192,231 +252,156 @@ func hapusKeahlian() {
 	keahlianList = append(keahlianList[:pilihan-1], keahlianList[pilihan:]...)
 	fmt.Printf("Keahlian '%s' berhasil dihapus\n", keahlianTerhapus)
 }
-type Karir struct {
-	Nama      string
-	Kecocokan int
-	Industri  string
-	Gaji      string
-}
-func tampilkanRekomendasi(daftar []Karir) {
-	fmt.Println("KARIR REKOMENDASI       | KECOCOKAN | INDUSTRI     | GAJI")
-	fmt.Println("------------------------+-----------+--------------+------------")
-	for _, k := range daftar {
-		fmt.Printf("%-24s | %-9d | %-12s | %s\n", k.Nama, k.Kecocokan, k.Industri, k.Gaji)
-	}
-}
 
 func karirRekomendasi() {
-	if len(minatList) == 0 || len(keahlianList) == 0 {
-		fmt.Println("Silakan tambahkan minat dan keahlian terlebih dahulu.")
+	fmt.Println("\n=== Rekomendasi Karir ===")
+
+	if len(minatList) == 0 && len(keahlianList) == 0 {
+		fmt.Println("Belum ada data minat atau keahlian")
 		return
 	}
 
+	fmt.Println("Berdasarkan minat dan keahlian Anda:")
+	fmt.Println("- Minat:", minatList)
+	fmt.Println("- Keahlian:", keahlianList)
+	fmt.Println("\nRekomendasi karir yang cocok:")
 
-	minat := minatList[len(minatList)-1]
-	keahlian := keahlianList[len(keahlianList)-1]
-
-	fmt.Println("\n=== Karir Rekomendasi Berdasarkan: ===")
-	fmt.Printf("Minat   : %s\n", minat)
-	fmt.Printf("Keahlian: %s\n", keahlian)
-
-	var rekomendasi []Karir
-
-	if (minat == "Menggambar" || minat == "Melukis") && keahlian == "Design Grafis" {
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 95, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
+	for _, minat := range minatList {
+		for _, keahlian := range keahlianList {
+			if (minat == "Menggambar" || minat == "Melukis") && keahlian == "Design Grafis" {
+				fmt.Println("- UI/UX Designer")
+			} else if minat == "Membaca" && keahlian == "Coding" {
+				fmt.Println("- Software Engineer")
+			} else if minat == "Menganalisis" || keahlian == "Menghitung" || keahlian == "Analisis" {
+				fmt.Println("- Data Analyst")
+			} else if minat == "Fotografi" && keahlian == "Editing Video" {
+				fmt.Println("- Video Editor")
+			} else if (minat == "Menggambar") && (keahlian == "Coding" || keahlian == "Design Grafis") {
+				fmt.Println("- Front-End Developer")
+			} else if minat == "Menulis" && (keahlian == "Menghafal" || keahlian == "Menganalisis") {
+				fmt.Println("- Technical Writer")
+			} else if minat == "Bermain alat musik" && keahlian == "Menghafal" {
+				fmt.Println("- Music Content Editor")
+			} else if minat == "Menulis" && (keahlian == "Menganalisis" || keahlian == "Coding") {
+				fmt.Println("- SEO Specialist")
+			} else if minat == "Melukis" && keahlian == "Design Grafis" {
+				fmt.Println("- Ilustrator Digital")
+			} else if minat == "Membaca" && (keahlian == "Menulis" || keahlian == "Menggambar") {
+				fmt.Println("- Content Strategist")
+			}
 		}
-	} else if minat == "Membaca" && keahlian == "Coding"{ 
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 70 , "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-
-	}else if minat == "Menganalisis" || keahlian == "Menghitung" || keahlian == "Analisis"{
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 70, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 95, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Fotografi" && keahlian == "Editing Video"{
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 75, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 97, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if (minat == "Menggambar") && (keahlian == "Coding" || keahlian == "Design Grafis")  {
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 75, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 98, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Menulis" && (keahlian == "Menghafal" || keahlian == "Menganalisis") {
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 60, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 99, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Bermain alat musik" && keahlian == "Menghafal" {
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 75, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 97, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Menulis" && (keahlian == "Menganalisis" || keahlian == "Coding"){
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 65, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 97, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Melukis" && keahlian == "Design Grafis"{
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 75, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 98, "Game", "6-10 juta"},
-			{"Content Strategist", 65, "Kreatif", "Bervariasi"},
-		}
-	}else if minat == "Membaca" && (keahlian == "Menulis" || keahlian == "Menggambar"){
-		rekomendasi = []Karir{
-			{"UI/UX Designer", 85, "Kreatif", "6-10 juta"},
-			{"Software Engineer", 90, "Teknologi", "7-12 juta"},
-			{"Data Analyst", 85, "Kreatif", "4-8 juta"},
-			{"Video Editor", 80, "Kreatif", "4-7 juta"},
-			{"Front-End Developer", 78, "Media", "5-8 juta"},
-			{"Technical Writer", 75, "Kreatif", "8-14 juta"},
-			{"Music Content Editor", 73, "Pemasaran", "6-10 juta"},
-			{"SEO Specialist", 70, "Media", "4-6 juta"},
-			{"Illustrator Digital", 68, "Game", "6-10 juta"},
-			{"Content Strategist", 95, "Kreatif", "Bervariasi"},
-		}
-
-	}else {
-		fmt.Println("Belum ada rekomendasi untuk kombinasi ini.")
-		return
-	}
-
-	tampilkanRekomendasi(rekomendasi)
-}
-
-func tampilminat(minat string, minatList []string) {
-	var i int
-	fmt.Println("\n=== Daftar Minat ===")
-	if len(minatList) == 0 {
-		fmt.Println("Belum ada data minat")
-		return
-	}
-
-	for i, minat = range minatList {
-		fmt.Printf("%d. %s\n", i+1, minat)
 	}
 }
-func tampilkeahlian(judul string, keahlianList []string) {
-	fmt.Printf("\n=== %s ===\n", judul)
-	if len(keahlianList) == 0 {
-		fmt.Println("Belum ada data keahlian")
-		return
+func tampilMinatDanKeahlian(minatList []string, keahlianList []string) {
+	var minat, keahlian string
+	fmt.Println("\n=== Daftar Minat & Keahlian ===")
+	fmt.Printf("%-4s| %-20s| %-20s\n", "No", "Minat", "Keahlian")
+	fmt.Println("----+--------------------+----------------------")
+
+	max := len(minatList)
+	if len(keahlianList) > max {
+		max = len(keahlianList)
 	}
 
-	for i, keahlian := range keahlianList {
-		fmt.Printf("%d. %s\n", i+1, keahlian)
+	for i := 0; i < max; i++ {
+		if i < len(minatList) {
+			minat = minatList[i]
+		}
+		if i < len(keahlianList) {
+			keahlian = keahlianList[i]
+		}
+		fmt.Printf("%-4d| %-20s| %-20s\n", i+1, minat, keahlian)
 	}
 }
 
+func pekerjaan() {
+	var pilihan, inputAngka int
+	pekerjaanData := []Pekerjaan{
+		{"UI/UX Designer", "6-10 juta"},
+		{"Software Engineer", "7-15 juta"},
+		{"Data Analyst", "6-12 juta"},
+		{"Video Editor", "4-8 juta"},
+		{"Front-End Developer", "6-10 juta"},
+		{"Technical Writer", "6-12 juta"},
+		{"Music Content Editor", "5-9 juta"},
+		{"SEO Specialist", "5-8 juta"},
+		{"Illustrator Digital", "5-9 juta"},
+		{"Content Strategist", "6-11 juta"},
+	}
 
-func cariKarirManual(nama string, karirList, industriList, gajiList []string) {
-    ditemukan := false
-    fmt.Println("\n=== Hasil Pencarian Karier ===")
-    for i := 0; i < len(karirList); i++ {
-        if nama == karirList[i] {
-            fmt.Println("Karier:", karirList[i])
-            fmt.Println("Industri:", industriList[i])
-            fmt.Println("Gaji:", gajiList[i])
-            ditemukan = true
-            break
-        }
-    }
-    if !ditemukan {
-        fmt.Println("Karier tidak ditemukan.")
-    }
+	fmt.Println("\n+-------------------------+--------------+")
+	fmt.Println("|      PEKERJAAN         |     GAJI     |")
+	fmt.Println("+-------------------------+--------------+")
+	for i := 0; i < len(pekerjaanData); i++ {
+		fmt.Printf("| %-23s | %-12s |\n", pekerjaanData[i].Nama, pekerjaanData[i].Gaji)
+	}
+	fmt.Println("+-------------------------+--------------+")
+	fmt.Println("\nPilih urutan:")
+	fmt.Println("1. Gaji Terbesar ke Terkecil")
+	fmt.Println("2. Gaji Terkecil ke Besar")
+	fmt.Println("3. Cari pekerjaan berdasarkan gaji")
+	fmt.Print("Pilihan Anda: ")
+	fmt.Scan(&pilihan)
+
+	switch pilihan {
+	case 1:
+		fmt.Println("Terbesar")
+		fmt.Println("+-------------------------+--------------+")
+		fmt.Println("|      PEKERJAAN         |     GAJI     |")
+		fmt.Println("+-------------------------+--------------+")
+		fmt.Println("| Software Engineer      | 7-15 juta    |")
+		fmt.Println("| Data Analyst           | 6-12 juta    |")
+		fmt.Println("| Technical Writer       | 6-12 juta    |")
+		fmt.Println("| Content Strategist     | 6-11 juta    |")
+		fmt.Println("| UI/UX Designer         | 6-10 juta    |")
+		fmt.Println("| Front-End Developer    | 6-10 juta    |")
+		fmt.Println("| Music Content Editor   | 5-9 juta     |")
+		fmt.Println("| Illustrator Digital    | 5-9 juta     |")
+		fmt.Println("| SEO Specialist         | 5-8 juta     |")
+		fmt.Println("| Video Editor           | 4-8 juta     |")
+
+		fmt.Println("+-------------------------+--------------+")
+	case 2:
+		fmt.Println("Terkecil")
+		fmt.Println("+-------------------------+--------------+")
+		fmt.Println("|      PEKERJAAN         |     GAJI     |")
+		fmt.Println("+-------------------------+--------------+")
+		fmt.Println("| Video Editor           | 4-8 juta     |")
+		fmt.Println("| SEO Specialist         | 5-8 juta     |")
+		fmt.Println("| Illustrator Digital    | 5-9 juta     |")
+		fmt.Println("| Music Content Editor   | 5-9 juta     |")
+		fmt.Println("| Front-End Developer    | 6-10 juta    |")
+		fmt.Println("| UI/UX Designer         | 6-10 juta    |")
+		fmt.Println("| Content Strategist     | 6-11 juta    |")
+		fmt.Println("| Technical Writer       | 6-12 juta    |")
+		fmt.Println("| Data Analyst           | 6-12 juta    |")
+		fmt.Println("| Software Engineer      | 7-15 juta    |")
+		fmt.Println("+-------------------------+--------------+")
+	case 3:
+
+		fmt.Print("\nMasukkan angka awal gaji (contoh: 6 untuk '6-10 juta'): ")
+		fmt.Scan(&inputAngka)
+
+		found := false
+		fmt.Println("\n+-------------------------+--------------+")
+		fmt.Println("|      PEKERJAAN         |     GAJI     |")
+		fmt.Println("+-------------------------+--------------+")
+
+		for i := 0; i < len(pekerjaanData); i++ {
+			gaji := pekerjaanData[i].Gaji
+			angkaAwal := int(gaji[0] - '0')
+
+			if angkaAwal == inputAngka {
+				fmt.Printf("| %-23s | %-12s |\n", pekerjaanData[i].Nama, gaji)
+				found = true
+			}
+		}
+
+		fmt.Println("+-------------------------+--------------+")
+		if !found {
+			fmt.Printf("Tidak ada pekerjaan dengan gaji mulai dari %d\n", inputAngka)
+		}
+	default:
+		fmt.Println("Pilihan tidak valid")
+	}
 }
-
-func cariIndustriManual(nama string, karirList, industriList, gajiList []string) {
-    ditemukan := false
-    fmt.Println("\n=== Hasil Pencarian Industri ===")
-    for i := 0; i < len(industriList); i++ {
-        if nama == industriList[i] {
-            fmt.Println("Karier:", karirList[i])
-            fmt.Println("Industri:", industriList[i])
-            fmt.Println("Gaji:", gajiList[i])
-            ditemukan = true
-        }
-    }
-    if !ditemukan {
-        fmt.Println("Industri tidak ditemukan.")
-    }
-}
-
