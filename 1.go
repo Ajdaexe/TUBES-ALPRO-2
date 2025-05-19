@@ -129,7 +129,7 @@ func tambahMinat() {
 
 func tambahKeahlian() {
 	var pilihan, sisa int
-	sisa = 1 - len(keahlianList) // Maksimal 1 keahlian
+	sisa = 1 - len(keahlianList) 
 
 	fmt.Println("\n=== Tambah Keahlian ===")
 	daftarKeahlian := []string{
