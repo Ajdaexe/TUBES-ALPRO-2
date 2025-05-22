@@ -129,7 +129,7 @@ func tambahMinat() {
 
 func tambahKeahlian() {
 	var pilihan, sisa int
-	sisa = 1 - len(keahlianList) 
+	sisa = 1 - len(keahlianList) // Maksimal 1 keahlian
 
 	fmt.Println("\n=== Tambah Keahlian ===")
 	daftarKeahlian := []string{
@@ -138,7 +138,7 @@ func tambahKeahlian() {
 		"Design Grafis",
 		"Editing Video",
 		"Menghafal",
-		"Menganalisis",
+		"Mengamati",
 		"Melukis",
 	}
 
@@ -183,6 +183,7 @@ func editMinat() {
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah Minat")
 	fmt.Println("2. hapus Minat (pilih 1)")
+	fmt.Println("3. Kembali ke Menu Utama")
 	fmt.Print("pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
@@ -190,6 +191,10 @@ func editMinat() {
 		tambahMinat()
 	case 2:
 		hapusMinat()
+	case 3:
+		return
+	default:
+		fmt.Println("Pilihan Tidak Valid")
 	}
 }
 
@@ -209,6 +214,7 @@ func editKeahlian() {
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah keahlian")
 	fmt.Println("2. hapus keahlian (pilih 1)")
+	fmt.Println("3. Kembali ke Menu Utama")
 	fmt.Print("pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
@@ -216,6 +222,10 @@ func editKeahlian() {
 		tambahKeahlian()
 	case 2:
 		hapusKeahlian()
+	case 3:
+		return
+	default:
+		fmt.Println("Pilihan Tidak Valid")
 	}
 }
 
@@ -273,17 +283,17 @@ func karirRekomendasi() {
 				rekomendasi = append(rekomendasi, Karir{"UI/UX Designer", 90, "Teknologi", "6-10 juta"})
 			} else if minat == "Membaca" && keahlian == "Coding" {
 				rekomendasi = append(rekomendasi, Karir{"Software Engineer", 85, "Teknologi", "7-15 juta"})
-			} else if minat == "Menganalisis" || keahlian == "Menghitung" || keahlian == "Analisis" {
+			} else if minat == "Mengamati" || keahlian == "Menghitung" || keahlian == "Analisis" {
 				rekomendasi = append(rekomendasi, Karir{"Data Analyst", 80, "Data", "6-12 juta"})
 			} else if minat == "Fotografi" && keahlian == "Editing Video" {
 				rekomendasi = append(rekomendasi, Karir{"Video Editor", 75, "Kreatif", "4-8 juta"})
 			} else if (minat == "Menggambar") && (keahlian == "Coding" || keahlian == "Design Grafis") {
 				rekomendasi = append(rekomendasi, Karir{"Front-End Developer", 85, "Teknologi", "6-10 juta"})
-			} else if minat == "Menulis" && (keahlian == "Menghafal" || keahlian == "Menganalisis") {
+			} else if minat == "Menulis" && (keahlian == "Menghafal" || keahlian == "Mengamati") {
 				rekomendasi = append(rekomendasi, Karir{"Technical Writer", 70, "Penulisan", "6-12 juta"})
 			} else if minat == "Bermain alat musik" && keahlian == "Menghafal" {
 				rekomendasi = append(rekomendasi, Karir{"Music Content Editor", 65, "Musik", "5-9 juta"})
-			} else if minat == "Menulis" && (keahlian == "Menganalisis" || keahlian == "Coding") {
+			} else if minat == "Menulis" && (keahlian == "Mengamati" || keahlian == "Coding") {
 				rekomendasi = append(rekomendasi, Karir{"SEO Specialist", 75, "Digital Marketing", "5-8 juta"})
 			} else if minat == "Melukis" && keahlian == "Design Grafis" {
 				rekomendasi = append(rekomendasi, Karir{"Ilustrator Digital", 80, "Kreatif", "5-9 juta"})
