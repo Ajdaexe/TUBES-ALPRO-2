@@ -59,7 +59,7 @@ func main() {
 			fmt.Println("Terima kasih, program selesai.")
 			keluar = true
 		default:
-			fmt.Println("Pilihan tidak valid, silakan pilih 1-10")
+			fmt.Println("Pilihan tidak valid, silakan pilih 1-8")
 		}
 	}
 }
@@ -90,19 +90,19 @@ func tambahMinat() {
 		return
 	}
 
-	fmt.Printf("\nKamu bisa mengisi %d minat (ketik '-' untuk berhenti lebih awal)\n", sisa)
+	fmt.Printf("\nKamu bisa mengisi %d minat (ketik '-' untuk menyudahi tambah minat)\n", sisa)
 	for i := 0; i < sisa; i++ {
 		fmt.Printf("Pilihan %d (1-8 atau - untuk berhenti): ", i+1)
 		fmt.Scan(&input)
 
 		if input == "-" {
-			fmt.Println("Anda Menghentikan Pemambahan.")
+			fmt.Println("Kamu Menghentikan Penambahan.")
 			break
 		}
 
 		var pilihan int
 		_, err := fmt.Sscan(input, &pilihan)
-		if err != nil || pilihan < 1 || pilihan > len(daftarMinat) {
+		if err != nil || pilihan < 1 || pilihan  > len(daftarMinat) {
 			fmt.Println("Input tidak valid")
 			return
 		}
@@ -129,7 +129,7 @@ func tambahMinat() {
 
 func tambahKeahlian() {
 	var pilihan, sisa int
-	sisa = 1 - len(keahlianList) // Maksimal 1 keahlian
+	sisa = 1 - len(keahlianList)
 
 	fmt.Println("\n=== Tambah Keahlian ===")
 	daftarKeahlian := []string{
@@ -182,9 +182,9 @@ func editMinat() {
 
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah Minat")
-	fmt.Println("2. hapus Minat (pilih 1)")
+	fmt.Println("2. Hapus Minat (pilih 1)")
 	fmt.Println("3. Kembali ke Menu Utama")
-	fmt.Print("pilihan kamu: ")
+	fmt.Print("Pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
 	case 1:
@@ -199,23 +199,22 @@ func editMinat() {
 }
 
 func editKeahlian() {
-	fmt.Println("\nMemanggil fungsi: editKeahlian()")
 	var pilihan int
 
 	fmt.Println("\n=== Edit Keahlian ===")
 	if len(keahlianList) == 0 {
-		fmt.Println("Belum ada minat yang tersedia")
+		fmt.Println("Belum ada Keahlian yang tersedia")
 		return
 	}
-	fmt.Println("Minat Anda saat ini:")
+	fmt.Println("Keahlian Anda saat ini:")
 	for i, keahlian := range keahlianList {
 		fmt.Printf("%d. %s\n", i+1, keahlian)
 	}
 	fmt.Println("\n pilih menu dibawah ini:")
 	fmt.Println("1. Tambah keahlian")
-	fmt.Println("2. hapus keahlian (pilih 1)")
+	fmt.Println("2. Hapus keahlian (pilih 1)")
 	fmt.Println("3. Kembali ke Menu Utama")
-	fmt.Print("pilihan kamu: ")
+	fmt.Print("Pilihan kamu: ")
 	fmt.Scan(&pilihan)
 	switch pilihan {
 	case 1:
@@ -247,7 +246,6 @@ func hapusMinat() {
 }
 
 func hapusKeahlian() {
-	fmt.Println("\nMemanggil fungsi: hapusKeahlian()")
 	var pilihan int
 
 	fmt.Print("\nPilih nomor keahlian yang akan dihapus: ")
@@ -262,10 +260,10 @@ func hapusKeahlian() {
 	keahlianList = append(keahlianList[:pilihan-1], keahlianList[pilihan:]...)
 	fmt.Printf("Keahlian '%s' berhasil dihapus\n", keahlianTerhapus)
 }
-
 func karirRekomendasi() {
 	var rekomendasi []Karir
 	var presentase int
+	var industriDicari string
 	fmt.Println("\n=== Rekomendasi Karir ===")
 
 	if len(minatList) == 0 && len(keahlianList) == 0 {
@@ -315,65 +313,88 @@ func karirRekomendasi() {
 
 		fmt.Println("+-------------------------+--------------+---------------+--------------+")
 		fmt.Println("Pilih yuk")
-		fmt.Println("1. Cari Presentasi paling tinggi")
-		fmt.Println("2. Cari Presentasi paling Rendah")
-		fmt.Println("3. Kembali ke menu utama")
+		fmt.Println("1. Urut Presentasi kecocokan paling tinggi")
+		fmt.Println("2. Urut Presentasi kecocokan paling Rendah")
+		fmt.Println("3. Cari Industri")
+		fmt.Println("4. Kembali ke menu utama")
 		fmt.Print("Pilihan Anda: ")
 		fmt.Scan(&presentase)
 
 		switch presentase {
 		case 1:
 			for i := 0; i < len(rekomendasi)-1; i++ {
-				for j := 0; j < len(rekomendasi)-i-1; j++ {
-					if rekomendasi[j].Kecocokan < rekomendasi[j+1].Kecocokan {
-						rekomendasi[j], rekomendasi[j+1] = rekomendasi[j+1], rekomendasi[j]
+				minIdx := i
+				for j := i + 1; j < len(rekomendasi); j++ {
+					if rekomendasi[j].Kecocokan > rekomendasi[minIdx].Kecocokan {
+						minIdx = j
 					}
 				}
+				rekomendasi[i], rekomendasi[minIdx] = rekomendasi[minIdx], rekomendasi[i]
 			}
 
-			tertinggi := rekomendasi[0].Kecocokan
-			fmt.Printf("\nRekomendasi dengan presentase TERTINGGI (%d%%):\n", tertinggi)
+			fmt.Println("\nUrutan rekomendasi Tertinggi:")
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 			fmt.Println("|      PEKERJAAN         | KECOCOKAN (%)|   INDUSTRI    |     GAJI     |")
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 			for i := 0; i < len(rekomendasi); i++ {
-				if rekomendasi[i].Kecocokan == tertinggi {
-					fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
-						rekomendasi[i].Nama, rekomendasi[i].Kecocokan, rekomendasi[i].Industri, rekomendasi[i].Gaji)
-				}
+				karir := rekomendasi[i]
+				fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+					karir.Nama, karir.Kecocokan, karir.Industri, karir.Gaji)
 			}
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 
 		case 2:
-			for i := 0; i < len(rekomendasi)-1; i++ {
-				for j := 0; j < len(rekomendasi)-i-1; j++ {
-					if rekomendasi[j].Kecocokan > rekomendasi[j+1].Kecocokan {
-						rekomendasi[j], rekomendasi[j+1] = rekomendasi[j+1], rekomendasi[j]
-					}
+			for i := 1; i < len(rekomendasi); i++ {
+				key := rekomendasi[i]
+				j := i - 1
+				for j >= 0 && rekomendasi[j].Kecocokan > key.Kecocokan {
+					rekomendasi[j+1] = rekomendasi[j]
+					j--
 				}
+				rekomendasi[j+1] = key
 			}
 
-			terendah := rekomendasi[0].Kecocokan
-			fmt.Printf("\nRekomendasi dengan presentase TERENDAH (%d%%):\n", terendah)
+			fmt.Println("\nUrutan rekomendasi Terendah:")
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 			fmt.Println("|      PEKERJAAN         | KECOCOKAN (%)|   INDUSTRI    |     GAJI     |")
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 			for i := 0; i < len(rekomendasi); i++ {
-				if rekomendasi[i].Kecocokan == terendah {
-					fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
-						rekomendasi[i].Nama, rekomendasi[i].Kecocokan, rekomendasi[i].Industri, rekomendasi[i].Gaji)
-				}
+				karir := rekomendasi[i]
+				fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+					karir.Nama, karir.Kecocokan, karir.Industri, karir.Gaji)
 			}
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 
 		case 3:
-			return
+			fmt.Print("Masukkan nama industri yang ingin dicari: ")
+			fmt.Scan(&industriDicari)
+			ditemukan := false
 
+			fmt.Println("\nHasil pencarian industri:", industriDicari)
+			fmt.Println("+-------------------------+--------------+---------------+--------------+")
+			fmt.Println("|      PEKERJAAN         | KECOCOKAN (%)|   INDUSTRI    |     GAJI     |")
+			fmt.Println("+-------------------------+--------------+---------------+--------------+")
+			for _, karir := range rekomendasi {
+				if karir.Industri == industriDicari {
+					fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+						karir.Nama, karir.Kecocokan, karir.Industri, karir.Gaji)
+					ditemukan = true
+				}
+			}
+			if !ditemukan {
+				fmt.Println("| yahhhh belum ada karir di industri tersebut yang sesuai dengan minat dan keahlian kamu :(  |")
+			}
+			fmt.Println("+-------------------------+--------------+---------------+--------------+")
+
+		case 4:
+			fmt.Println("Kembali ke menu utama.")
+			return
 		default:
 			fmt.Println("Pilihan tidak valid.")
 		}
+	} else {
+		fmt.Println("Tidak ditemukan rekomendasi karir dari kombinasi tersebut.")
 	}
-
 }
 
 func tampilMinatDanKeahlian(minatList []string, keahlianList []string) {
@@ -424,43 +445,49 @@ func pekerjaan() {
 	fmt.Println("1. Gaji Terbesar ke Terkecil")
 	fmt.Println("2. Gaji Terkecil ke Besar")
 	fmt.Println("3. Cari pekerjaan berdasarkan gaji")
+	fmt.Println("4. Kembali ke Menu Utama")
 	fmt.Print("Pilihan Anda: ")
 	fmt.Scan(&pilihan)
 
 	switch pilihan {
 	case 1:
-		fmt.Println("Terbesar")
-		fmt.Println("+-------------------------+--------------+")
-		fmt.Println("|      PEKERJAAN         |     GAJI     |")
-		fmt.Println("+-------------------------+--------------+")
-		fmt.Println("| Software Engineer      | 7-15 juta    |")
-		fmt.Println("| Data Analyst           | 6-12 juta    |")
-		fmt.Println("| Technical Writer       | 6-12 juta    |")
-		fmt.Println("| Content Strategist     | 6-11 juta    |")
-		fmt.Println("| UI/UX Designer         | 6-10 juta    |")
-		fmt.Println("| Front-End Developer    | 6-10 juta    |")
-		fmt.Println("| Music Content Editor   | 5-9 juta     |")
-		fmt.Println("| Illustrator Digital    | 5-9 juta     |")
-		fmt.Println("| SEO Specialist         | 5-8 juta     |")
-		fmt.Println("| Video Editor           | 4-8 juta     |")
+		for i := 0; i < len(pekerjaanData)-1; i++ {
+			maxIdx := i
+			for j := i + 1; j < len(pekerjaanData); j++ {
+				if pekerjaanData[j].Gaji > pekerjaanData[maxIdx].Gaji {
+					maxIdx = j
+				}
+			}
+			pekerjaanData[i], pekerjaanData[maxIdx] = pekerjaanData[maxIdx], pekerjaanData[i]
+		}
 
-		fmt.Println("+-------------------------+--------------+")
-	case 2:
-		fmt.Println("Terkecil")
-		fmt.Println("+-------------------------+--------------+")
+		fmt.Println("\n+-------------------------+--------------+")
 		fmt.Println("|      PEKERJAAN         |     GAJI     |")
 		fmt.Println("+-------------------------+--------------+")
-		fmt.Println("| Video Editor           | 4-8 juta     |")
-		fmt.Println("| SEO Specialist         | 5-8 juta     |")
-		fmt.Println("| Illustrator Digital    | 5-9 juta     |")
-		fmt.Println("| Music Content Editor   | 5-9 juta     |")
-		fmt.Println("| Front-End Developer    | 6-10 juta    |")
-		fmt.Println("| UI/UX Designer         | 6-10 juta    |")
-		fmt.Println("| Content Strategist     | 6-11 juta    |")
-		fmt.Println("| Technical Writer       | 6-12 juta    |")
-		fmt.Println("| Data Analyst           | 6-12 juta    |")
-		fmt.Println("| Software Engineer      | 7-15 juta    |")
+		for i := 0; i < len(pekerjaanData); i++ {
+			fmt.Printf("| %-23s | %-12s |\n", pekerjaanData[i].Nama, pekerjaanData[i].Gaji)
+		}
 		fmt.Println("+-------------------------+--------------+")
+
+	case 2:
+		for i := 1; i < len(pekerjaanData); i++ {
+			key := pekerjaanData[i]
+			j := i - 1
+			for j >= 0 && pekerjaanData[j].Gaji > key.Gaji {
+				pekerjaanData[j+1] = pekerjaanData[j]
+				j--
+			}
+			pekerjaanData[j+1] = key
+		}
+
+		fmt.Println("\n+-------------------------+--------------+")
+		fmt.Println("|      PEKERJAAN         |     GAJI     |")
+		fmt.Println("+-------------------------+--------------+")
+		for i := 0; i < len(pekerjaanData); i++ {
+			fmt.Printf("| %-23s | %-12s |\n", pekerjaanData[i].Nama, pekerjaanData[i].Gaji)
+		}
+		fmt.Println("+-------------------------+--------------+")
+
 	case 3:
 
 		fmt.Print("\nMasukkan angka awal gaji (contoh: 6 untuk '6-10 juta'): ")
@@ -485,6 +512,8 @@ func pekerjaan() {
 		if !found {
 			fmt.Printf("Tidak ada pekerjaan dengan gaji mulai dari %d\n", inputAngka)
 		}
+	case 4:
+		return
 	default:
 		fmt.Println("Pilihan tidak valid")
 	}
