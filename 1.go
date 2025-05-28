@@ -263,7 +263,6 @@ func hapusKeahlian() {
 func karirRekomendasi() {
 	var rekomendasi []Karir
 	var presentase int
-	var industriDicari string
 	fmt.Println("\n=== Rekomendasi Karir ===")
 
 	if len(minatList) == 0 && len(keahlianList) == 0 {
@@ -366,34 +365,19 @@ func karirRekomendasi() {
 			fmt.Println("+-------------------------+--------------+---------------+--------------+")
 
 		case 3:
-			fmt.Print("Masukkan nama industri yang ingin dicari: ")
+			var industriDicari string
+			fmt.Print("Masukkan industri yang dicari: ")
 			fmt.Scan(&industriDicari)
-			ditemukan := false
-
-			fmt.Println("\nHasil pencarian industri:", industriDicari)
-			fmt.Println("+-------------------------+--------------+---------------+--------------+")
-			fmt.Println("|      PEKERJAAN         | KECOCOKAN (%)|   INDUSTRI    |     GAJI     |")
-			fmt.Println("+-------------------------+--------------+---------------+--------------+")
-			for _, karir := range rekomendasi {
-				if karir.Industri == industriDicari {
-					fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
-						karir.Nama, karir.Kecocokan, karir.Industri, karir.Gaji)
-					ditemukan = true
-				}
-			}
-			if !ditemukan {
-				fmt.Println("| yahhhh belum ada karir di industri tersebut yang sesuai dengan minat dan keahlian kamu :(  |")
-			}
-			fmt.Println("+-------------------------+--------------+---------------+--------------+")
+			binarySearch(rekomendasi, industriDicari)
 
 		case 4:
-			fmt.Println("Kembali ke menu utama.")
 			return
+
 		default:
 			fmt.Println("Pilihan tidak valid.")
 		}
 	} else {
-		fmt.Println("Tidak ditemukan rekomendasi karir dari kombinasi tersebut.")
+		fmt.Println("Maaf, belum ada karir yang cocok ditemukan berdasarkan minat dan keahlian kamu.")
 	}
 }
 
@@ -490,7 +474,7 @@ func pekerjaan() {
 
 	case 3:
 
-		fmt.Print("\nMasukkan angka awal gaji (contoh: 6 untuk '6-10 juta'): ")
+		fmt.Print("\nMasukkan angka awal gaji (contoh: 6 untuk '6-10 juta'): ````````````````````````````````                                                                                                `")
 		fmt.Scan(&inputAngka)
 
 		found := false
@@ -517,4 +501,57 @@ func pekerjaan() {
 	default:
 		fmt.Println("Pilihan tidak valid")
 	}
+}
+
+func binarySearch(rekomendasi []Karir, industriDicari string) {
+	for i := 0; i < len(rekomendasi)-1; i++ {
+		for j := 0; j < len(rekomendasi)-i-1; j++ {
+			if rekomendasi[j].Industri > rekomendasi[j+1].Industri {
+				rekomendasi[j], rekomendasi[j+1] = rekomendasi[j+1], rekomendasi[j]
+			}
+		}
+	}
+	rendah := 0
+	tinggi := len(rekomendasi) - 1
+	found := false
+
+	fmt.Println("\nHasil pencarian industri", industriDicari, ":")
+	fmt.Println("+-------------------------+--------------+---------------+--------------+")
+	fmt.Println("|      PEKERJAAN         | KECOCOKAN (%)|   INDUSTRI    |     GAJI     |")
+	fmt.Println("+-------------------------+--------------+---------------+--------------+")
+
+	for rendah <= tinggi {
+		tengah := (rendah + tinggi) / 2
+
+		if rekomendasi[tengah].Industri == industriDicari {
+			found = true
+			fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+				rekomendasi[tengah].Nama, rekomendasi[tengah].Kecocokan,
+				rekomendasi[tengah].Industri, rekomendasi[tengah].Gaji)
+			kiri := tengah - 1
+			for kiri >= 0 && rekomendasi[kiri].Industri == industriDicari {
+				fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+					rekomendasi[kiri].Nama, rekomendasi[kiri].Kecocokan,
+					rekomendasi[kiri].Industri, rekomendasi[kiri].Gaji)
+				kiri--
+			}
+			kanan := tengah + 1
+			for kanan < len(rekomendasi) && rekomendasi[kanan].Industri == industriDicari {
+				fmt.Printf("| %-23s | %-12d | %-13s | %-12s |\n",
+					rekomendasi[kanan].Nama, rekomendasi[kanan].Kecocokan,
+					rekomendasi[kanan].Industri, rekomendasi[kanan].Gaji)
+				kanan++
+			}
+			break
+		} else if rekomendasi[tengah].Industri < industriDicari {
+			rendah = tengah + 1
+		} else {
+			tinggi = tengah - 1
+		}
+	}
+
+	if !found {
+		fmt.Println("| Tidak ditemukan karir dengan industri tersebut |")
+	}
+	fmt.Println("+-------------------------+--------------+---------------+--------------+")
 }
